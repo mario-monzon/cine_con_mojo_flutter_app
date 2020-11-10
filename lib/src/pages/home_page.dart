@@ -24,15 +24,17 @@ class HomePage extends StatelessWidget {
       ),
       body: Container(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            _swiperTarjetas()
+            _swiperCards(),
+            _footerInfiniteScroll(context)
           ],
         )
       ),
     );
   }
 
-  Widget _swiperTarjetas() {
+  Widget _swiperCards() {
     return FutureBuilder(
         future: moviesProvider.getInTheaters(),
         builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
@@ -52,6 +54,24 @@ class HomePage extends StatelessWidget {
 
 
   } // _swiperTarjetas
+
+  Widget _footerInfiniteScroll(BuildContext context){
+
+    return Container(
+      width: double.infinity,
+      child: Column(
+        children: <Widget>[
+          Text( 'Populares', style: Theme.of(context).textTheme.subtitle1, ),
+          // FutureBuilder(
+          //     future: Future,
+          //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+          //       return ;
+          //     },
+          // ),
+        ],
+      ),
+    );
+  }
 
 
 } // HomePage
