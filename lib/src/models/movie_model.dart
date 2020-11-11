@@ -99,6 +99,18 @@ class Movie {
        } else {
          return 'https://image.tmdb.org/t/p/w500/$poster_path';
        }
-    }
+    } // getPosterImg
+
+    getBackdropPath(){
+
+      final noAvalible = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png';
+
+      if (backdrop_path == null) {
+        return noAvalible;
+      } else {
+        return 'https://image.tmdb.org/t/p/w500/$backdrop_path';
+      }
+
+    } // getBackdropPath
 
 }

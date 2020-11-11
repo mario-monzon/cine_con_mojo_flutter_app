@@ -1,5 +1,6 @@
 import 'package:cine_con_mojo_flutter_app/src/models/movie_model.dart';
 import 'package:cine_con_mojo_flutter_app/src/widgets/lottie_animation_widget.dart';
+import 'package:cine_con_mojo_flutter_app/src/widgets/movie_horizontal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    moviesProvider.getPopular();
+
     return Scaffold(
       appBar: AppBar(
         title: Text( 'Películas en Cines' ),
@@ -38,17 +42,7 @@ class HomePage extends StatelessWidget {
     return FutureBuilder(
         future: moviesProvider.getInTheaters(),
         builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-
-          if ( snapshot.hasData ) {
-            return CardSwiper( movies: snapshot.data );
-          } else {
-            return Container(
-              height: 400.0,
-                child: Center(
-                    child: LottieAnimation('box_animation')
-                )
-            );
-          }
+          return snapshot.hasData ? CardSwiper( movies: snapshot.data ) : Center(child: LottieAnimation('box_animation'));
         }
     );
 
@@ -60,14 +54,28 @@ class HomePage extends StatelessWidget {
     return Container(
       width: double.infinity,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text( 'Populares', style: Theme.of(context).textTheme.subtitle1, ),
-          // FutureBuilder(
-          //     future: Future,
-          //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-          //       return ;
-          //     },
-          // ),
+          Container(
+            padding: EdgeInsets.only(left: 20.0),
+              child: Text( 'Populares', style: Theme.of(context).textTheme.subtitle1, )),
+          SizedBox(height: 5.0,),
+          StreamBuilder(
+              stream: moviesProvider.popularMoviesStream,
+              builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+
+                snapshot.data?.forEach( (p) => print(p.title) );
+
+                if ( snapshot.hasData )  {
+                  return MovieHorizontal(
+                      movies: snapshot.data,
+                      nextPage: moviesProvider.getPopular,
+                  );
+                } else {
+                   return Center( child: CircularProgressIndicator() );
+                }
+              },
+          ),
         ],
       ),
     );
