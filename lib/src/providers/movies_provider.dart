@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
+import 'package:cine_con_mojo_flutter_app/src/models/actors_model.dart';
 import 'package:cine_con_mojo_flutter_app/src/models/movie_model.dart';
 
 class MoviesProvider {
@@ -24,6 +24,7 @@ class MoviesProvider {
 
 
   void disposeStreams ( ) { _popularMoviesStreamController?.close(); }
+
 
   Future<List<Movie>> _processResponse(Uri url) async {
     final resp = await http.get( url );
@@ -59,6 +60,20 @@ class MoviesProvider {
     return resp;
   } // getPopular
 
-}// MoviesProvider
+  Future<List<Actor>> getCast( String movieId ) async {
 
-// 3/movie/popular
+    final url = Uri.https(_url, '3/movie/$movieId/credits', {
+      'api_key': _apikey,
+      'language': _language
+    });
+
+    final resp = await http.get(url);
+    final decodeData = json.decode( resp.body );
+
+    final cast = new Cast.fromJsonList(decodeData['cast']);
+
+    return cast.actors;
+
+  }
+
+}// MoviesProvider
