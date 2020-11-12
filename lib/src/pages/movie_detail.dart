@@ -1,5 +1,6 @@
-import 'package:cine_con_mojo_flutter_app/src/providers/movies_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:cine_con_mojo_flutter_app/src/models/actors_model.dart';
+import 'package:cine_con_mojo_flutter_app/src/providers/movies_provider.dart';
 import 'package:cine_con_mojo_flutter_app/src/models/movie_model.dart';
 
 class MovieDetail extends StatelessWidget {
@@ -57,15 +58,17 @@ class MovieDetail extends StatelessWidget {
   }
 
   Widget _posterTitle( BuildContext context, Movie movie ) {
-
     return Container(
       child: Row(
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Image(
-              image: NetworkImage( movie.getPosterImg() ),
-              height: 150.0,
+          Hero(
+            tag: movie.uniqueId,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Image(
+                image: NetworkImage( movie.getPosterImg() ),
+                height: 150.0,
+              ),
             ),
           ),
           SizedBox( width: 20.0 ),
@@ -107,9 +110,54 @@ class MovieDetail extends StatelessWidget {
 
     final movieProvider = new MoviesProvider();
 
+    return FutureBuilder(
+      future: movieProvider.getCast(movie.id.toString()),
+      builder: ( context, AsyncSnapshot<List> sanpshot ) {
 
-  } // _createCasting
+        return  sanpshot.hasData ? _creatorActorsPageView( sanpshot.data ) : Center(child: CircularProgressIndicator(),);
+      },
+      
+    );
+  } // _createCastingS
 
+  Widget _creatorActorsPageView( List<Actor> actors){
+
+    return SizedBox(
+      height: 200.0,
+      child: PageView.builder(
+        pageSnapping: false,
+        controller: PageController(
+          viewportFraction: 0.3,
+          initialPage: 1
+        ),
+        itemCount: actors.length,
+        itemBuilder: (context, i) =>  _actorCard( actors[i] ),
+      ),
+    );
+
+  }
+
+  Widget _actorCard( Actor actor ) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: FadeInImage(
+                placeholder: AssetImage( 'assets/img/no_avatar.png' ),
+                image: NetworkImage( actor.getPhoto() ),
+                height: 150.0,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Text(
+          actor.name,
+          overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
 
 
 
